@@ -4,7 +4,6 @@
 //
 //  Created by Prithika Venkatesh on 4/8/25.
 //
-
 import SwiftUI
 import PhotosUI
 
@@ -13,65 +12,102 @@ struct ContentView: View {
     @State private var predictionResult: String = ""
     @State private var suggestedBin: String = ""
     @State private var showPicker = false
+    @State private var barcodeDetected = ""
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 20) {
-                Text("Garbage Classifier")
-                    .font(.largeTitle)
-                    .bold()
-                    .padding(.top)
+            ZStack {
+                // 🌿 Gradient Background
+                LinearGradient(
+                    gradient: Gradient(colors: [Color.white, Color(red: 0.85, green: 1.0, blue: 0.85)]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
                 
-                if let image = selectedImage {
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 300)
-                        .cornerRadius(16)
-                } else {
-                    Image(systemName: "photo")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 100, height: 100)
-                        .foregroundColor(.gray.opacity(0.5))
-                }
-                
-                Button("Scan Trash") {
-                    showPicker = true
+                VStack(spacing: 20) {
+                    Text("Garbage Classifier")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(Color("DarkGreen"))
+                        .padding(.top)
+
+                    if let image = selectedImage {
+                        Image(uiImage: image)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(height: 300)
+                            .cornerRadius(16)
+                    } else {
+                        Image("sign") // Your custom placeholder image
+                            .resizable()
+                            .scaledToFit()
+                            .frame(height: 300)
+                            .cornerRadius(16)
+                    }
+
+                    VStack(spacing: 16) {
+                        Button("Scan Trash") {
+                            showPicker = true
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.green.opacity(0.9))
+                        .foregroundColor(.white)
+                        .font(.headline)
+                        .cornerRadius(12)
+
+                        Button("Scan Barcode") {
+                            simulateBarcodeScan()
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue.opacity(0.9))
+                        .foregroundColor(.white)
+                        .font(.headline)
+                        .cornerRadius(12)
+                    }
+                    .padding(.horizontal)
+
+                    if !barcodeDetected.isEmpty {
+                        Text("Detected Barcode: \(barcodeDetected)")
+                            .font(.headline)
+                            .padding()
+                    }
+
+                    if !predictionResult.isEmpty {
+                        Text("Item: \(predictionResult)")
+                            .font(.headline)
+                        Text("Suggested Bin: \(suggestedBin)")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+
+                    Spacer()
+
+                    // Bottom bar can go here if you want
+                    NavigationLink(destination: HomeView()) {
+                        Text("⬅️ Back to Home")
+                            .foregroundColor(.blue)
+                            .padding(.top)
+                    }
                 }
                 .padding()
-                .background(Color.green.opacity(0.8))
-                .foregroundColor(.white)
-                .clipShape(Capsule())
-                
-                if !predictionResult.isEmpty {
-                    Text("Item: \(predictionResult)")
-                        .font(.headline)
-                    Text("Suggested Bin: \(suggestedBin)")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
-                
-                Spacer()
-                
-                NavigationLink(destination: HomeView()) {
-                    Text("⬅️ Back to Home")
-                        .foregroundColor(.blue)
-                        .padding(.top)
-                }
             }
             .sheet(isPresented: $showPicker) {
                 PhotoPicker(image: $selectedImage, onImagePicked: classifyImage)
             }
-            .padding()
         }
     }
 
-    // ✅ Outside of the body now
     func classifyImage(_ image: UIImage?) {
         let sampleItems = ["Plastic Bottle", "Banana Peel", "Styrofoam"]
         predictionResult = sampleItems.randomElement() ?? "Unknown"
         suggestedBin = binForItem(predictionResult)
+    }
+
+    func simulateBarcodeScan() {
+        barcodeDetected = "123456789012"
     }
 
     func binForItem(_ item: String) -> String {
@@ -87,4 +123,3 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
-

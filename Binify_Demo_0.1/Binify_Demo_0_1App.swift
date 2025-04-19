@@ -6,12 +6,21 @@
 //
 
 import SwiftUI
+import FirebaseCore 
 
 @main
 struct Binify_Demo_0_1App: App {
+    
+    
+    init() {
+        FirebaseApp.configure()
+    }
+    
     var body: some Scene {
         WindowGroup {
-            HomeView()
+            ContentView()
         }
     }
 }
+
+
