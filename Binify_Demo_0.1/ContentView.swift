@@ -87,7 +87,7 @@ struct ContentView: View {
 
                     // Bottom bar can go here if you want
                     NavigationLink(destination: HomeView()) {
-                        Text("⬅️ Back to Home")
+                        Text("⬅️🏠 Back to Home")
                             .foregroundColor(.blue)
                             .padding(.top)
                     }
